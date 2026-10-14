@@ -184,16 +184,11 @@ if err != nil {
 fmt.Println(answer)
 ```
 
-如果需要多模态或多 part 输入，可以继续使用 ADK Go 的 `genai.Part` 类型，并从事件流中收集最终文本：
+如果需要事件流，可以继续使用 `Run`，只在需要时收集最终文本：
 
 ```go
-msg := runner.UserParts(
-	genai.NewPartFromText("describe this image"),
-	genai.NewPartFromBytes(imageBytes, "image/png"),
-)
-
 answer, err := runner.CollectFinalText(
-	r.Run(ctx, "user", "session", msg, agent.RunConfig{}),
+	r.Run(ctx, "user", "session", runner.UserText("hello"), agent.RunConfig{}),
 )
 ```
 

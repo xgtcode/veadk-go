@@ -49,11 +49,7 @@ func main() {
 	}
 	fmt.Println(answer)
 
-	msg := verunner.UserParts(
-		genai.NewPartFromText("describe this inline image"),
-		genai.NewPartFromBytes([]byte("fake image bytes"), "image/png"),
-	)
-	answer, err = verunner.CollectFinalText(r.Run(ctx, "user", "parts-session", msg, agent.RunConfig{}))
+	answer, err = verunner.CollectFinalText(r.Run(ctx, "user", "content-session", verunner.UserText("collect final text"), agent.RunConfig{}))
 	if err != nil {
 		panic(err)
 	}
@@ -90,7 +86,6 @@ func describeContent(content *genai.Content) string {
 		return ""
 	}
 	var textParts []string
-	var inlineParts int
 	for _, part := range content.Parts {
 		if part == nil {
 			continue
@@ -98,15 +93,8 @@ func describeContent(content *genai.Content) string {
 		if part.Text != "" {
 			textParts = append(textParts, part.Text)
 		}
-		if part.InlineData != nil {
-			inlineParts++
-		}
 	}
-	text := strings.Join(textParts, " ")
-	if inlineParts == 0 {
-		return text
-	}
-	return fmt.Sprintf("%s (%d inline part)", text, inlineParts)
+	return strings.Join(textParts, " ")
 }
 
 func visibleText(content *genai.Content) string {

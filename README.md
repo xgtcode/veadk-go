@@ -187,16 +187,11 @@ if err != nil {
 fmt.Println(answer)
 ```
 
-For multimodal or multi-part input, keep the ADK Go `genai.Part` types and collect the final response text from the event stream:
+When you need the event stream, keep using `Run` and collect the final text only where needed:
 
 ```go
-msg := runner.UserParts(
-	genai.NewPartFromText("describe this image"),
-	genai.NewPartFromBytes(imageBytes, "image/png"),
-)
-
 answer, err := runner.CollectFinalText(
-	r.Run(ctx, "user", "session", msg, agent.RunConfig{}),
+	r.Run(ctx, "user", "session", runner.UserText("hello"), agent.RunConfig{}),
 )
 ```
 

@@ -20,19 +20,3 @@ import "google.golang.org/genai"
 func UserText(text string) *genai.Content {
 	return genai.NewContentFromText(text, genai.RoleUser)
 }
-
-// UserParts builds a user message from typed genai parts.
-func UserParts(parts ...*genai.Part) *genai.Content {
-	copied := append([]*genai.Part(nil), parts...)
-	return genai.NewContentFromParts(copied, genai.RoleUser)
-}
-
-// UserBytes builds a user message from inline bytes and a MIME type.
-func UserBytes(data []byte, mimeType string) *genai.Content {
-	return genai.NewContentFromBytes(data, mimeType, genai.RoleUser)
-}
-
-// UserURI builds a user message from a file URI and a MIME type.
-func UserURI(fileURI, mimeType string) *genai.Content {
-	return genai.NewContentFromURI(fileURI, mimeType, genai.RoleUser)
-}

@@ -13,7 +13,7 @@ go run ./examples/runner/basic
 它展示三种常见用法：
 
 - `RunText`：纯文本输入，并直接获取最终文本响应。
-- `UserParts` 配合 `CollectFinalText`：处理多 part 或多模态输入。
+- `CollectFinalText`：从事件流中收集最终文本。
 - `Run`：消费原始 ADK 事件流。
 
 多轮对话时，复用相同的 `userID` 和 `sessionID` 即可延续会话上下文。
@@ -47,25 +47,18 @@ VeADK Python 的 `Runner.run` 接收比较宽泛的 `messages` 参数。VeADK Go
 | Python 输入 | VeADK Go 对应写法 |
 | --- | --- |
 | `runner.run(messages="hello")` | `r.RunText(ctx, userID, sessionID, "hello", agent.RunConfig{})` |
-| `runner.run(messages=MediaMessage(...))` | 构造 `genai.Part`，调用 `runner.UserParts(...)`，再调用 `r.Run(...)` |
 | `runner.run(messages=[...])` | 使用相同 `userID` 和 `sessionID` 多次调用 `RunText` 或 `Run` |
 | 返回最终文本 | `RunText(...)` 或 `CollectFinalText(r.Run(...))` |
 | 消费事件流 | 遍历 `r.Run(...)` |
 
-这样可以保持 Go 调用点的类型清晰，同时覆盖纯文本、多模态输入、多轮会话、最终文本响应和原始事件流这些常见工作流。
+这样可以保持 Go 调用点的类型清晰，同时覆盖文本输入、多轮会话、最终文本响应和原始事件流这些常见文本工作流。Python `MediaMessage` 风格的多模态便利 API 不放在这一阶段。
 
 ## 输入 Helper
 
-构造用户消息时可以使用这些 helper：
+构造用户文本消息时可以使用这个 helper：
 
 ```go
 msg := runner.UserText("hello")
-msg := runner.UserBytes(imageBytes, "image/png")
-msg := runner.UserURI("gs://bucket/image.png", "image/png")
-msg := runner.UserParts(
-	genai.NewPartFromText("describe this image"),
-	genai.NewPartFromBytes(imageBytes, "image/png"),
-)
 ```
 
-如果要构造 model 消息、tool call、tool response 或自定义 role，可以直接使用底层 `google.golang.org/genai` 构造函数。
+如果要构造非文本消息、model 消息、tool call、tool response 或自定义 role，可以直接使用底层 `google.golang.org/genai` 构造函数。
